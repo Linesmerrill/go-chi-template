@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="EN">
+<head>
+    <title>{{ .Title  }}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <header>
+    </header>
+    <main>
+        {{ block "content" . }}
+        {{ end }}
+    </main>
+    <footer>
+    </footer>
+    <script src="/static/js/script.js"></script>
+</body>
+</html>
