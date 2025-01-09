@@ -1,4 +1,4 @@
-package main
+package router
 
 import (
 	"log"
@@ -8,7 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func Routes() *chi.Mux {
+func Router() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
