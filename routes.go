@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -46,9 +47,11 @@ func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		token := r.Header.Get("Authorization")
 		if token != "valid-token" {
+			log.Printf("Authentication failed for request: %s %s", r.Method, r.URL.Path)
 			http.Error(w, "Forbidden", http.StatusForbidden)
 			return
 		}
+		log.Printf("Authentication successful for request: %s %s", r.Method, r.URL.Path)
 		next.ServeHTTP(w, r)
 	})
 }
