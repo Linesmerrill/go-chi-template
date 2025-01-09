@@ -12,10 +12,10 @@ func Routes() *chi.Mux {
 	r.Use(middleware.Logger)
 
 	r.Get("/", homeHandler)
-	r.Get("/user/{userID}", userHandler)
-	r.Get("/search", searchHandler)
-	r.Post("/submit", submitHandler)
-	r.With(middleware.NoCache).Get("/nocache", noCacheHandler)
+	r.With(AuthMiddleware).Get("/user/{userID}", userHandler)
+	r.With(AuthMiddleware).Get("/search", searchHandler)
+	r.With(AuthMiddleware).Post("/submit", submitHandler)
+	r.With(middleware.NoCache, AuthMiddleware).Get("/nocache", noCacheHandler)
 
 	return r
 }
@@ -40,4 +40,15 @@ func submitHandler(w http.ResponseWriter, r *http.Request) {
 
 func noCacheHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("This response is not cached"))
+}
+
+func AuthMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := r.Header.Get("Authorization")
+		if token != "valid-token" {
+			http.Error(w, "Forbidden", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
