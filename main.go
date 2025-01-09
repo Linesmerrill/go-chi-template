@@ -1,43 +1,42 @@
 package main
 
 import (
-	"html/template"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-var templates *template.Template
-
-func init() {
-	templates = template.Must(template.ParseFiles("templates/home.html", "templates/about.html", "templates/base.html"))
-}
-
 func main() {
 	r := chi.NewRouter()
-
-	// Middleware
 	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
 
-	// Routes
-	r.Get("/", homeHandler)
-	r.Get("/about", aboutHandler)
+	// Basic route
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Welcome to the home page!"))
+	})
 
-	http.ListenAndServe(":3000", r)
-}
+	// Route with URL parameters
+	r.Get("/user/{userID}", func(w http.ResponseWriter, r *http.Request) {
+		userID := chi.URLParam(r, "userID")
+		w.Write([]byte("User ID: " + userID))
+	})
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "home.html", nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
-}
+	// Route with query parameters
+	r.Get("/search", func(w http.ResponseWriter, r *http.Request) {
+		query := r.URL.Query().Get("q")
+		w.Write([]byte("Search query: " + query))
+	})
 
-func aboutHandler(w http.ResponseWriter, r *http.Request) {
-	err := templates.ExecuteTemplate(w, "about.html", nil)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-	}
+	// Route with POST method
+	r.Post("/submit", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("Form submitted!"))
+	})
+
+	// Route with middleware
+	r.With(middleware.NoCache).Get("/nocache", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("This response is not cached"))
+	})
+
+	http.ListenAndServe(":8080", r)
 }
