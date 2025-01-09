@@ -41,7 +41,13 @@ This project is a template for building web applications using the Go programmin
 
 ## Project Structure
 
-go-chi-template/ ├── main.go ├── go.mod ├── go.sum ├── README.md └── ...
+go-chi-template/
+├── main.go
+├── routes.go
+├── go.mod
+├── go.sum
+├── README.md
+└── ...
 
 ## Contributing
 1. Fork the repository
